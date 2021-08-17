@@ -9,12 +9,16 @@ class SimpleLexer {
 
   // 判断字符
   isAlpha(char) {
-    return (char >= 'a' && char <= 'z') || char >= 'A' || char <= 'Z';
+    const reg = new RegExp(/^[a-zA-Z_]([a-zA-Z_] | [0-9])*/);
+    const result = reg.test(char);
+    return result;
   }
 
   // 判断数字
   isDigit(char) {
-    return char >= '0' && char <= '9';
+    const reg = new RegExp("[0-9]+");
+    const result = reg.test(char);
+    return result;
   }
 
   // 判断空格
@@ -22,9 +26,10 @@ class SimpleLexer {
     return char === ' ' || char === '\t' || char === '\n' || char === '\r';
   }
 
-  initToken(char) {
-    console.log('this.tokenText-->', this.tokenText);
-    console.log('this.char-->', char);
+  calToken(char) {
+    // console.log('this.tokenText-->', this.tokenText);
+    // console.log('this.char-->', char);
+    console.log('tcalToken-->', 111111, char);
     if (this.tokenText.length > 0) {
       this.token.text = this.tokenText;
       this.tokens.push(this.token);
@@ -34,8 +39,6 @@ class SimpleLexer {
     }
 
     let newState = DfaState.Initial;
-    console.log('this.token', this.token);
-    console.log('this.tokenText', this.tokenText);
     if (this.isAlpha(char)) {
       this.token.type = TokenType.Identifier;
       this.tokenText += char;
@@ -69,18 +72,20 @@ class SimpleLexer {
     this.token = new SimpleToken();
     let state = DfaState.Initial; // 初始状态机的状态为 initial
     const scriptList = script.split('');
-    for (let index = 0; index < scriptList.length; index++) {
+    let index;
+    for (index = 0; index < scriptList.length; index++) {
+      console.log('index-->', index);
       const char = scriptList[index];
-
+      debugger;
       switch (state) {
         case DfaState.Initial:
-          state = this.initToken(char);
+          state = this.calToken(char);
           break;
         case DfaState.Id:
-          if (this.isAlpha(char) || isDigit(char)) {
+          if (this.isAlpha(char) || this.isDigit(char)) {
             this.tokenText += char;
           } else {
-            state = this.initToken(char);
+            state = this.calToken(char);
           }
           break;
         case DfaState.GT:
@@ -89,7 +94,7 @@ class SimpleLexer {
             state = DfaState.GE;
             this.tokenText += char;
           } else {
-            state = this.initToken(char);
+            state = this.calToken(char);
           }
           break;
         case DfaState.GE:
@@ -100,20 +105,21 @@ class SimpleLexer {
         case DfaState.Slash:
         case DfaState.LeftParen:
         case DfaState.RightParen:
-          state = this.initToken(char);
+          state = this.calToken(char);
           break;
         case DfaState.IntLiteral:
-          if (isDigit(char)) {
+          if (this.isDigit(char)) {
             this.tokenText += char;
           } else {
-            state = this.initToken(char);
+            state = this.calToken(char);
           }
           break;
         default:
       }
-      if (this.tokenText.length > 0) {
-        this.initToken(char);
-      }
+    }
+    if (this.tokenText.length > 0) {
+      const char = scriptList[index];
+      this.calToken(char);
     }
     console.log('999999');
     console.log('tokens-->', this.tokens);
