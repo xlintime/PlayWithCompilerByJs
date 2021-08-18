@@ -21,11 +21,13 @@ class SimpleeTokenReader {
     }
     return null;
   }
+
   unRead() {
     if (this.pos > 0) {
       this.pos--;
     }
   }
+
   getPosition() {
     return this.pos;
   }
