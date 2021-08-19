@@ -26,41 +26,7 @@ class SimpleLexer {
     return char === ' ' || char === '\t' || char === '\n' || char === '\r';
   }
 
-  calToken(char) {
-    // console.log('this.tokenText-->', this.tokenText);
-    // console.log('this.char-->', char);
-    console.log('tcalToken-->', 111111, char);
-    if (this.tokenText.length > 0) {
-      this.token.text = this.tokenText;
-      this.tokens.push(this.token);
 
-      this.tokenText = '';
-      this.token = new SimpleToken();
-    }
-
-    let newState = DfaState.Initial;
-    if (this.isAlpha(char)) {
-      this.token.type = TokenType.Identifier;
-      this.tokenText += char;
-      newState = DfaState.Id;
-    } else if (this.isDigit(char)) {
-      newState = DfaState.IntLiteral;
-      this.token.type = TokenType.IntLiteral;
-      this.tokenText += char;
-    } else if (char === '=') {
-      newState = DfaState.Assignment;
-      this.token.type = TokenType.Assignment;
-      this.tokenText += char;
-    } else if (char === ';') {
-      newState = DfaState.SemiColon;
-      this.token.type = TokenType.SemiColon;
-      this.tokenText += char;
-    } else {
-      newState = DfaState.Initial; // skip all unknown patterns
-    }
-
-    return newState;
-  }
 
   /**
    *
@@ -76,7 +42,6 @@ class SimpleLexer {
     for (index = 0; index < scriptList.length; index++) {
       console.log('index-->', index);
       const char = scriptList[index];
-      debugger;
       switch (state) {
         case DfaState.Initial:
           state = this.calToken(char);
@@ -118,12 +83,49 @@ class SimpleLexer {
       }
     }
     if (this.tokenText.length > 0) {
+      console.log('this.tokenText-->',this.tokenText)
+      console.log('this.state-->',state)
+      debugger
       const char = scriptList[index];
       this.calToken(char);
     }
-    console.log('999999');
-    console.log('tokens-->', this.tokens);
     return this.tokens;
+  }
+
+  calToken(char) {
+    console.log('this.tokenText-->', char,"---",this.tokenText);
+    // console.log('this.char-->', char);
+    // console.log('tcalToken-->', 111111, char);
+    if (this.tokenText.length > 0) {
+      this.token.text = this.tokenText;
+      this.tokens.push(this.token);
+
+      this.tokenText = '';
+      this.token = new SimpleToken();
+    }
+
+    let newState = DfaState.Initial;
+    if (this.isAlpha(char)) {
+      this.token.type = TokenType.Identifier;
+      this.tokenText += char;
+      newState = DfaState.Id;
+    } else if (this.isDigit(char)) {
+      newState = DfaState.IntLiteral;
+      this.token.type = TokenType.IntLiteral;
+      this.tokenText += char;
+    } else if (char === '=') {
+      newState = DfaState.Assignment;
+      this.token.type = TokenType.Assignment;
+      this.tokenText += char;
+    } else if (char === ';') {
+      newState = DfaState.SemiColon;
+      this.token.type = TokenType.SemiColon;
+      this.tokenText += char;
+    } else {
+      newState = DfaState.Initial; // skip all unknown patterns
+    }
+
+    return newState;
   }
 }
 
